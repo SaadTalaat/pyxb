@@ -721,6 +721,13 @@ class date (_PyXBDateOnly_base):
     output is canonicalized (timezones no more than 12 hours off UTC).
     """
 
+    def __new__(cls, *args, **kw):
+        # https://github.com/pabigot/pyxb/issues/123
+        if len(args) == 8:
+            if args[3] == 12 and all(not bool(x) for x in args[-4:]):
+                args = args[:3]
+        return super().__new__(cls, *args, **kw)
+
     _ExpandedName = pyxb.namespace.XMLSchema.createExpandedName('date')
     _Lexical_fmt = '%Y-%m-%d'
     _Fields = ( 'year', 'month', 'day' )
